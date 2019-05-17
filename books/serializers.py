@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from authors.models import Author
 from books.models import Book
 from categories.models import Category

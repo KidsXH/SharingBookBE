@@ -10,6 +10,7 @@ class AdminType(object):
     REGULAR_USER = "Regular User"
     ADMIN = "Admin"
     SUPER_ADMIN = "Super Admin"
+    TYPES = [REGULAR_USER, ADMIN, SUPER_ADMIN]
 
 
 class UserManager(models.Manager):
@@ -27,7 +28,7 @@ class User(AbstractBaseUser):
     email = models.TextField(null=True)
 
     # One of UserType
-    admin_type = models.TextField(default=AdminType.REGULAR_USER)
+    admin_type = models.TextField(choices=AdminType.TYPES, default=AdminType.REGULAR_USER)
 
     reset_password_token = models.TextField(null=True)
     reset_password_token_expire_time = models.DateTimeField(null=True)
@@ -56,7 +57,7 @@ class User(AbstractBaseUser):
         return self.admin_type in [AdminType.ADMIN, AdminType.SUPER_ADMIN]
 
     class Meta:
-        ordering = ['created']
+        ordering = ['created', ]
 
 
 class UserProfile(models.Model):
