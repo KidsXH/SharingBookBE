@@ -1,4 +1,3 @@
-from rest_framework import permissions
 from rest_framework.mixins import ListModelMixin
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
@@ -8,13 +7,14 @@ from django.contrib import auth
 
 from users.models import User, UserProfile
 from users.serializers import UserProfileSerializer
+from utils.permissions import IsAdminUser
 
 
 class UserProfileViewSet(ListModelMixin,
                          GenericViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
+    permission_classes = [IsAdminUser, ]
 
 
 class UserLoginView(APIView):
