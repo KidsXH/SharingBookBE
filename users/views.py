@@ -1,11 +1,20 @@
-from rest_framework import generics
-# from rest_framework.mixins import ListModelMixin, CreateModelMixin
+from rest_framework import permissions
+from rest_framework.mixins import ListModelMixin
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib import auth
 
 from users.models import User, UserProfile
+from users.serializers import UserProfileSerializer
+
+
+class UserProfileViewSet(ListModelMixin,
+                         GenericViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
 
 
 class UserLoginView(APIView):

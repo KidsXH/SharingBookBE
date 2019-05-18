@@ -20,12 +20,14 @@ from authors.views import AuthorViewSet
 from books.views import BookViewSet
 from categories.views import CategoryViewSet
 from tags.views import TagViewSet
+from users.views import UserProfileViewSet
 
 router = DefaultRouter()
 router.register(r'authors', AuthorViewSet)
 router.register(r'books', BookViewSet)
 router.register(r'categories', CategoryViewSet)
 router.register(r'tags', TagViewSet)
+router.register(r'users', UserProfileViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

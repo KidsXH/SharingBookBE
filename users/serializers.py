@@ -2,17 +2,17 @@ from rest_framework import serializers
 from users.models import UserProfile, User
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        field = ('url', 'id', 'username', 'email', 'admin_type')
+        fields = ('id', 'username', 'email', 'admin_type')
 
 
-class UserProfileSerialize(serializers.HyperlinkedRelatedField):
+class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
     class Meta:
         model = UserProfile
-        filed = ('url', 'id', 'user', 'phone_number', 'credit', 'avatar',
-                 'books_read', 'books_reading', 'books_donated',
-                 'favorite_books', 'favorite_tags', 'favorite_categories')
+        fields = ('id', 'phone_number', 'credit', 'user',
+                  'books_read', 'books_reading', 'books_donated',
+                  'favorite_books', 'favorite_tags', 'favorite_categories')
