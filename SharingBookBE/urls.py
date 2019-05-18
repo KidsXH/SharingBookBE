@@ -30,6 +30,7 @@ router.register(r'tags', TagViewSet)
 router.register(r'users', UserProfileViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
+    path('api/', include('users.urls')),
     path('api-auth/', include('rest_framework.urls')),
 ]
