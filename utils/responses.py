@@ -4,7 +4,9 @@ from rest_framework.response import Response
 
 class ResponseMsg:
     @staticmethod
-    def ok(msg=None):
+    def ok(msg=None, data=None):
+        if data:
+            return Response(data, status=status.HTTP_200_OK)
         return Response({'message': msg}, status=status.HTTP_200_OK)
 
     @staticmethod
