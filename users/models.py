@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractBaseUser
-from SharingBookBE.settings import AVATAR_URI_PREFIX
 from django.db import models
 from books.models import Book
 from categories.models import Category

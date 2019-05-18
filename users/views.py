@@ -1,13 +1,12 @@
 from rest_framework.mixins import ListModelMixin
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.response import Response
-from rest_framework import status
 from django.contrib import auth
 
 from users.models import User, UserProfile
 from users.serializers import UserProfileSerializer
 from utils.permissions import IsAdminUser
+from utils.responses import ResponseMsg
 
 
 class UserProfileViewSet(ListModelMixin,
@@ -19,22 +18,34 @@ class UserProfileViewSet(ListModelMixin,
 
 class UserLoginView(APIView):
     def post(self, request):
+
+        if request.user.is_authenticated():
+            return ResponseMsg.bad_request('A user has logged in.')
+
         data = request.data
-        user = auth.authenticate(username=data['username'], password=data['password'])
+        username = data.get('username')
+        password = data.get('password')
+
+        if username:
+            return ResponseMsg.bad_request("'username' field is required.")
+        if password:
+            return ResponseMsg.bad_request("'password' field is required.")
+
+        user = auth.authenticate(username=username, password=password)
 
         if user:
             if user.is_disabled:
-                return Response({'detail', 'Disabled user'}, status=status.HTTP_400_BAD_REQUEST)
+                return ResponseMsg.bad_request('The user is disabled.')
             auth.login(request, user)
-            return Response({"detail", "Succeed"}, status=status.HTTP_201_CREATED)
+            return ResponseMsg.created('Login successfully.')
         else:
-            return Response({'detail', 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+            return ResponseMsg.bad_request('Invalid username or password.')
 
 
 class UserLogoutView(APIView):
     def get(self, request):
         auth.logout(request)
-        return Response({"detail", "Succeed"}, status=status.HTTP_200_OK)
+        return ResponseMsg.ok('Logout successfully.')
 
 
 class UserRegisterView(APIView):
@@ -45,16 +56,16 @@ class UserRegisterView(APIView):
         email = data['email']
 
         if User.objects.filter(username=username).exists():
-            return Response({'detail': 'Username already exist'}, status=status.HTTP_400_BAD_REQUEST)
+            return ResponseMsg.bad_request('Username already exist.')
         if User.objects.filter(email=email).exists():
-            return Response({'detail': 'Email already exist'}, status=status.HTTP_400_BAD_REQUEST)
+            return ResponseMsg.bad_request('Email already exist.')
 
         user = User.objects.create(username=username, email=email)
         user.set_password(password)
         user.save()
         UserProfile.objects.create(user=user)
 
-        return Response({'detail', 'Succeed'}, status=status.HTTP_201_CREATED)
+        return ResponseMsg.created('Register Successfully.')
 
 
 class UserProfileView(APIView):
