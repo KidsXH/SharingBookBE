@@ -5,7 +5,7 @@ from django.contrib import auth
 
 from users.models import User, UserProfile
 from users.serializers import UserProfileSerializer
-from utils.permissions import IsAdminUser
+from utils.permissions import IsAdminRole
 from utils.responses import ResponseMsg
 
 
@@ -17,7 +17,7 @@ class UserProfileViewSet(ListModelMixin,
     """
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [IsAdminUser, ]
+    permission_classes = [IsAdminRole, ]
 
 
 class UserLoginView(APIView):
@@ -34,10 +34,10 @@ class UserLoginView(APIView):
         username = data.get('username')
         password = data.get('password')
 
-        # If username or password was missed, return error message.
-        if username:
+        # If username or password was missed in request, return error message.
+        if username is None:
             return ResponseMsg.bad_request("'username' field is required.")
-        if password:
+        if password is None:
             return ResponseMsg.bad_request("'password' field is required.")
 
         # Try to log in and get the user instance.
@@ -75,6 +75,14 @@ class UserRegisterView(APIView):
         username = data.get('username')
         password = data.get('password')
         email = data.get('email')
+
+        # Check if any fields are missed
+        if username is None:
+            return ResponseMsg.bad_request("'username' field is required.")
+        if password is None:
+            return ResponseMsg.bad_request("'password' field is required.")
+        if email is None:
+            return ResponseMsg.bad_request("'email' field is required.")
 
         # Check if username and email address are unique.
         if User.objects.filter(username=username).exists():
