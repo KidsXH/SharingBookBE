@@ -6,6 +6,9 @@ from tags.models import Tag
 
 
 class AdminType(object):
+    """
+    Define 3 types of user.
+    """
     REGULAR_USER = "Regular User"
     ADMIN = "Admin"
     SUPER_ADMIN = "Super Admin"
@@ -15,6 +18,7 @@ class AdminType(object):
 class UserManager(models.Manager):
     use_in_migrations = True
 
+    # Get instance by natural key (username).
     def get_by_natural_key(self, username):
         return self.get(**{f"{self.model.USERNAME_FIELD}__iexact": username})
 
@@ -25,9 +29,10 @@ class User(AbstractBaseUser):
 
     # Profiles
     username = models.TextField(unique=True)
-    email = models.TextField(null=True)
+    email = models.TextField(null=True, unique=True)
 
-    # One of UserType
+    # This field is no use temporarily because we have not implemented admin model.
+    # All users will be registered as regular user.
     admin_type = models.TextField(choices=AdminType.TYPES, default=AdminType.REGULAR_USER)
 
     is_disabled = models.BooleanField(default=False)
