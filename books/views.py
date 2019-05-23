@@ -3,8 +3,6 @@ import json
 from books.models import Book, BookTagRel
 from books.serializers import BookSerializer
 from rest_framework import viewsets, permissions, generics
-from rest_framework.response import Response
-from rest_framework import status
 
 from categories.models import Category
 from tags.models import Tag
@@ -60,7 +58,7 @@ class BookViewSet(viewsets.ModelViewSet):
                 if sort_order == 'DESC':
                     books = reversed(books)
             else:
-                return Response({"detail": "Invalid sort key."}, status=status.HTTP_400_BAD_REQUEST)
+                return ResponseMsg.bad_request("Invalid sort key.")
 
         if request.user.is_authenticated:
             for book in books:
@@ -73,7 +71,7 @@ class BookViewSet(viewsets.ModelViewSet):
             "bookList": serializer.data,
             "keywords": keywords,
         }
-        return Response(data, status=status.HTTP_200_OK)
+        return ResponseMsg.ok(data)
 
 
 class BookRecommendView(generics.ListCreateAPIView):
