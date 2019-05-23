@@ -41,12 +41,16 @@ class BookViewSet(viewsets.ModelViewSet):
         if tags and len(tags) > 0:
             keywords += tags
             # Relations between books and tags
-            rel = BookTagRel.objects.all()
-            relations = rel.none()
+            relation_queryset = BookTagRel.objects.all()
+            tag_queryset = Tag.objects.all()
+
+            relations = relation_queryset.none()
             results = books.none()
+
             for tag_name in tags:
-                tag = Tag.objects.all().get(tag_name=tag_name)
-                relations = relations.union(rel.filter(tag=tag))
+                tag = tag_queryset.get(tag_name=tag_name)
+                relations = relations.union(relation_queryset.filter(tag=tag))
+
             for r in relations:
                 results = results.union(books.filter(id=r.book.id))
             books = results
