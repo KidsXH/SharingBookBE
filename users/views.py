@@ -27,7 +27,7 @@ class UserLoginView(APIView):
     """
     def post(self, request):
         # If there is a user has logged in, return error message.
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return ResponseMsg.bad_request('A user has logged in.')
 
         data = request.data
@@ -42,7 +42,7 @@ class UserLoginView(APIView):
 
         # Try to log in and get the user instance.
         # If username is not found or password is invalid, the value of user will be None.
-        user = auth.authenticate(username=username, password=password)
+        user = auth.authenticate(request, username=username, password=password)
 
         if user:
             if user.is_disabled:
@@ -75,6 +75,8 @@ class UserRegisterView(APIView):
         username = data.get('username')
         password = data.get('password')
         email = data.get('email')
+
+        print(data)
 
         # Check if any fields are missed
         if username is None:
