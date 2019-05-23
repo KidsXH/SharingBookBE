@@ -4,9 +4,6 @@ from authors.models import Author
 from books.models import Book
 from categories.models import Category
 from tags.models import Tag
-from tags.serializers import TagSerializer
-from authors.serializers import AuthorSerializer
-from categories.serializers import CategorySerializer
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -17,4 +14,4 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ('id', 'book_name', 'author', 'introduction', 'category', 'tags',
-                  'book_credit', 'trending', 'quantity', 'rating', 'rating_amount')
+                  'book_credit', 'trending', 'quantity', 'rating', 'rating_amount', 'created')

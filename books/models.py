@@ -20,9 +20,6 @@ class Book(models.Model):
     tags = models.ManyToManyField(Tag, related_name='books', through='BookTagRel')
     category = models.ForeignKey(Category, related_name='books', on_delete=models.CASCADE)
 
-    class Meta:
-        ordering = ['created', ]
-
 
 class BookTagRel(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
