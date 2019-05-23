@@ -71,7 +71,7 @@ class BookViewSet(viewsets.ModelViewSet):
             "bookList": serializer.data,
             "keywords": keywords,
         }
-        return ResponseMsg.ok(data)
+        return ResponseMsg.ok(data=data)
 
 
 class BookRecommendView(generics.ListCreateAPIView):

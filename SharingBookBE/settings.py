@@ -176,3 +176,4 @@ REST_FRAMEWORK = {
 # User Model
 AUTH_USER_MODEL = 'users.User'
 PICTURE_URI_PREFIX = '../assets/pictures/'
+
