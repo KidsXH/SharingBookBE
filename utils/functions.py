@@ -31,10 +31,11 @@ def search_books(books, search_text):
     :param search_text: string
     :return: queryset
     """
+    result = books.none()
     if search_text:
         keywords = search_text.split()
         for keyword in keywords:
-            books = books.exclude(book_name=keyword)
-            books = books.exclude(author=keyword)
-            books = books.exclude(category=keyword)
-    return books
+            result = result.union(books.filter(book_name=keyword))
+            result = result.union(books.filter(author__author_name=keyword))
+            result = result.union(books.filter(category__category_name=keyword))
+    return result

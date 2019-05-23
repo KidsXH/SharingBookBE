@@ -2,6 +2,7 @@ from django.db import models
 from authors.models import Author
 from categories.models import Category
 from tags.models import Tag
+from SharingBookBE.settings import PICTURE_URI_PREFIX
 
 
 class Book(models.Model):
@@ -15,6 +16,8 @@ class Book(models.Model):
     quantity = models.PositiveIntegerField(default=0)
     rating = models.DecimalField(max_digits=2, decimal_places=1, null=True)
     rating_amount = models.PositiveIntegerField(default=0)
+    is_favorite = models.BooleanField(default=False)
+    picture_path = models.TextField(default=PICTURE_URI_PREFIX + 'default.png')
 
     author = models.ForeignKey(Author, related_name='books', on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, related_name='books', through='BookTagRel')

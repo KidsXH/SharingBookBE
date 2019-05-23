@@ -1,12 +1,15 @@
+import json
+
 from books.models import Book, BookTagRel
 from books.serializers import BookSerializer
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, generics
 from rest_framework.response import Response
 from rest_framework import status
 
 from categories.models import Category
 from tags.models import Tag
 from utils.functions import search_books
+from utils.responses import ResponseMsg
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -59,6 +62,12 @@ class BookViewSet(viewsets.ModelViewSet):
             else:
                 return Response({"detail": "Invalid sort key."}, status=status.HTTP_400_BAD_REQUEST)
 
+        if request.user.is_authenticated:
+            for book in books:
+                if request.user.userprofile.favorite_books.exists(pk=book.pk):
+                    book.is_favorite = True
+                    book.save()
+
         serializer = self.get_serializer(books, many=True)
         data = {
             "bookList": serializer.data,
@@ -67,7 +76,39 @@ class BookViewSet(viewsets.ModelViewSet):
         return Response(data, status=status.HTTP_200_OK)
 
 
+class BookRecommendView(generics.ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = BookSerializer
 
+    def list(self, request, *args, **kwargs):
+        categories = self.get_queryset()
+        cates = []
+        fav_cates = json.loads(request.user.userprofile.favorite_categories).get('data')
+        read_books = json.loads(request.user.userprofile.books_read).get('data')
 
+        for i in range(-5, 0):
+            new_cates = [1, read_books[i]]
+            if i != -5:
+                for j in range(-5, i):
+                    if read_books[i] == cates[j + 5][1]:
+                        cates[j + 5][0] += 1
+                        break
+                    if j == i - 1:
+                        cates.append(new_cates)
+            else:
+                cates.append(new_cates)
 
+        for i in fav_cates:
+            for j in cates:
+                if i == j[1]:
+                    j[0] += 2
+                    break
 
+        cates.sort()
+
+        book1 = categories.get(category_name=cates[-1][1]).books.order_by('rating')[0]
+        book2 = categories.get(category_name=cates[-2][1]).books.order_by('rating')[0]
+        result = {"result": [{"book1_id": book1.id, "book1_name": book1.book_name},
+                             {"book1_id": book2.id, "book1_name": book2.book_name}]}
+
+        return ResponseMsg.ok(data=result)
